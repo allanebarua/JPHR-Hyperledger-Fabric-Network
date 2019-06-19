@@ -1,0 +1,62 @@
+../bin/cryptogen generate --config=./crypto-config.yaml
+
+export FABRIC_CFG_PATH=$PWD
+
+../bin/configtxgen -profile OrdererGenesis -outputBlock ./channel-artifacts/genesis.block
+
+../bin/configtxgen -profile SystemwideApplicationChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID jilindechannel
+
+../bin/configtxgen -profile SystemwideApplicationChannel -outputAnchorPeersUpdate ./channel-artifacts/PatientsMSP.tx -channelID jilindechannel -asOrg PatientsMSP
+
+../bin/configtxgen -profile SystemwideApplicationChannel -outputAnchorPeersUpdate ./channel-artifacts/NairobiHospitalMSP.tx -channelID jilindechannel -asOrg NairobiHospitalMSP
+
+../bin/configtxgen -profile SystemwideApplicationChannel -outputAnchorPeersUpdate ./channel-artifacts/MicroHealthcareProvidersMSP.tx -channelID jilindechannel -asOrg MicroHealthcareProvidersMSP
+
+docker-compose -f docker-compose-cli.yaml up -d
+
+docker exec -it cli bash
+
+export CHANNEL_NAME=jilindechannel
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/patients.jphr-network.com/users/Admin@patients.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer0.patients.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="PatientsMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/patients.jphr-network.com/peers/peer0.patients.jphr-network.com/tls/ca.crt
+
+peer channel create -o orderer.jphr-network.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/jphr-network.com/orderers/orderer.jphr-network.com/msp/tlscacerts/tlsca.jphr-network.com-cert.pem
+
+peer channel join -b jilindechannel.block
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/patients.jphr-network.com/users/Admin@patients.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer1.patients.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="PatientsMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/patients.jphr-network.com/peers/peer1.patients.jphr-network.com/tls/ca.crt
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/microhealthcareproviders.jphr-network.com/users/Admin@microhealthcareproviders.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer0.microhealthcareproviders.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="MicroHealthcareProvidersMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/microhealthcareproviders.jphr-network.com/peers/peer0.microhealthcareproviders.jphr-network.com/tls/ca.crt
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/microhealthcareproviders.jphr-network.com/users/Admin@microhealthcareproviders.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer1.microhealthcareproviders.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="MicroHealthcareProvidersMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/microhealthcareproviders.jphr-network.com/peers/peer1.microhealthcareproviders.jphr-network.com/tls/ca.crt
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/nairobihospital.jphr-network.com/users/Admin@nairobihospital.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer0.nairobihospital.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="NairobiHospitalMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/nairobihospital.jphr-network.com/peers/peer0.nairobihospital.jphr-network.com/tls/ca.crt
+
+
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/nairobihospital.jphr-network.com/users/Admin@nairobihospital.jphr-network.com/msp
+CORE_PEER_ADDRESS=peer1.nairobihospital.jphr-network.com:7051
+CORE_PEER_LOCALMSPID="NairobiHospitalMSP"
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/nairobihospital.jphr-network.com/peers/peer1.nairobihospital.jphr-network.com/tls/ca.crt
+
+
+peer channel update -o orderer.jphr-network.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/NairobiHospitalMSP.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/jphr-network.com/orderers/orderer.jphr-network.com/msp/tlscacerts/tlsca.jphr-network.com-cert.pem
+
+-f docker-compose-couch.yaml -f docker-compose-cas.yaml

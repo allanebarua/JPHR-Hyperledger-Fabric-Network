@@ -1,0 +1,28 @@
+OrdererOrgs:
+  - Name: OrderingService
+    Domain: jphr-network.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: Patients
+    Domain: patients.jphr-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users: 
+      Count: 1
+  - Name: MicroHealthcareProviders
+    Domain: microhealthcareproviders.jphr-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users: 
+      Count: 1
+  - Name: NairobiHospital
+    Domain: nairobihospital.jphr-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 1

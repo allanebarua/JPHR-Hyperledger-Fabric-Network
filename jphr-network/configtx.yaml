@@ -1,0 +1,98 @@
+# Profiles
+
+Profiles:
+    OrdererGenesis:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SystemwideConsortium:
+                Organizations:
+                    - *Patients
+                    - *MicroHealthcareProviders
+                    - *NairobiHospital
+    SystemwideApplicationChannel:
+        Consortium: SystemwideConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Patients
+                - *MicroHealthcareProviders
+                - *NairobiHospital
+            Capabilities:
+                <<: *ApplicationCapabilities
+
+
+# Organizations
+
+Organizations:
+
+  - &OrdererOrg
+    Name: OrderingService
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/jphr-network.com/msp
+
+  - &Patients
+    Name: PatientsMSP
+    ID: PatientsMSP
+    MSPDir: crypto-config/peerOrganizations/patients.jphr-network.com/msp
+    AnchorPeers:
+      - Host: peer0.patients.jphr-network.com
+        Port: 7051
+
+  - &NairobiHospital
+    Name: NairobiHospitalMSP
+    ID: NairobiHospitalMSP
+    MSPDir: crypto-config/peerOrganizations/nairobihospital.jphr-network.com/msp
+    AnchorPeers:
+      - Host: peer0.nairobihospital.jphr-network.com
+        Port: 7051
+
+  - &MicroHealthcareProviders
+    Name: MicroHealthcareProvidersMSP
+    ID: MicroHealthcareProvidersMSP
+    MSPDir: crypto-config/peerOrganizations/microhealthcareproviders.jphr-network.com/msp
+    AnchorPeers:
+      - Host: peer0.microhealthcareproviders.jphr-network.com
+        Port: 7051
+
+
+# Orderer
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+    Addresses:
+        - orderer.jphr-network.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers:
+            - 127.0.0.1:9092
+    Organizations:
+
+
+# Capabilities
+
+Capabilities:
+    Global: &ChannelCapabilities
+        V1_1: true
+    Orderer: &OrdererCapabilities
+        V1_1: true
+    Application: &ApplicationCapabilities
+        V1_1: true
+
+
+# Application
+
+Application: &ApplicationDefaults
+
+    Organizations:
