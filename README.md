@@ -1,3 +1,3 @@
-# Jilinde Portable Health Records System
+# JPHR-Hyperledger Fabric Network
 
-Portable health records system built on top of the Hyperledger Fabric Blockchain network
+A fabric network on which the portable health records system is built
